@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { FontAwesome5 } from '@expo/vector-icons';
 import ModalDropdown from 'react-native-modal-dropdown';
 import ErrorModal from './ErrorModal'; // Import the ErrorModal component
+import * as Haptics from 'expo-haptics';
 
 const AddExpenseScreen = ({ navigation }) => {
   const [title, setTitle] = useState('');
@@ -49,6 +50,7 @@ const AddExpenseScreen = ({ navigation }) => {
     const formattedAmount = amount.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
 
     if (!title || !description || !formattedAmount || !date) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       setErrorModalVisible(true);
       return;
     }
@@ -74,6 +76,7 @@ const AddExpenseScreen = ({ navigation }) => {
       const { handleAddNewExpense } = route.params;
       handleAddNewExpense(newExpense);
       navigation.goBack();
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     } catch (error) {
       console.error('Error saving new expense:', error);
     }
@@ -139,9 +142,9 @@ const AddExpenseScreen = ({ navigation }) => {
     <View style={styles.container}>
       {/* Icon above the title */}
       <View style={styles.iconContainer}>
-      <Icon name="info" size={40} color="#fff" style={styles.iconAboveTitle} />
+      <Icon name="leaf" size={30} color="#fff" style={styles.iconAboveTitle} />
       </View>
-      <Text style={styles.title}>Thông Tin Chi Tiêu</Text>
+      <Text style={styles.title}>Thông tin chi tiêu</Text>
 
       <View style={styles.inputContainer}>
         <TextInput
@@ -153,7 +156,7 @@ const AddExpenseScreen = ({ navigation }) => {
         />
         {title !== '' && (
           <TouchableOpacity onPress={() => clearInput('title')}>
-            <Icon name="times-circle" size={20} color="#ccc" style={styles.clearIcon} />
+            <Icon name="times-circle" size={18} color="#ccc" style={styles.clearIcon} />
           </TouchableOpacity>
         )}
       </View>
@@ -162,6 +165,8 @@ const AddExpenseScreen = ({ navigation }) => {
       <TouchableOpacity style={{ flex: 1 }} onPress={toggleDropdown}>
           <ModalDropdown
             options={availableDescriptions}
+            defaultIndex = {0}
+            isFullWidth = {true}
             defaultValue={description}
             onSelect={(index, value) => handleSelectOption(value)}
             onDropdownWillShow={toggleDropdown}
@@ -170,7 +175,7 @@ const AddExpenseScreen = ({ navigation }) => {
             dropdownStyle={styles.customDropdownOptions}
             dropdownTextStyle={styles.customDropdownOptionText}
             dropdownTextHighlightStyle={styles.customDropdownHighLightStyle}
-            showsVerticalScrollIndicator={true}
+            showsVerticalScrollIndicator={false}
             renderSeparator={() => <View style={styles.dropdownSeparator} />}
           />
           <Icon name="chevron-down" size={15} color="#ccc" style={styles.arrowIcon} />
@@ -190,7 +195,7 @@ const AddExpenseScreen = ({ navigation }) => {
          <Text style={styles.currencyText}>đ</Text>
           {amount !== '' && (
             <TouchableOpacity onPress={() => clearInput('amount')}>
-              <Icon name="times-circle" size={20} color="#ccc" style={styles.clearIcon} />
+              <Icon name="times-circle" size={18} color="#ccc" style={styles.clearIcon} />
             </TouchableOpacity>
           )}
         </View>
@@ -207,12 +212,12 @@ const AddExpenseScreen = ({ navigation }) => {
         />
         {!isDateEditable && (
           <TouchableOpacity onPress={handleEditDate}>
-            <Icon name="edit" size={20} color="#ccc" style={styles.editIcon} />
+            <Icon name="edit" size={18} color="#ccc" style={styles.editIcon} />
           </TouchableOpacity>
         )}
         {isDateEditable && date !== getCurrentDate() && (
           <TouchableOpacity onPress={() => clearInput('date')}>
-            <Icon name="times-circle" size={20} color="#ccc" style={styles.clearIcon} />
+            <Icon name="times-circle" size={18} color="#ccc" style={styles.clearIcon} />
           </TouchableOpacity>
         )}
       </View>
@@ -222,7 +227,7 @@ const AddExpenseScreen = ({ navigation }) => {
       />
 
       <TouchableOpacity style={styles.addButton} onPress={handleAddExpense}>
-      < FontAwesome5 name="plus" size={20} color="#fff" style={styles.buttonIcon} />
+      < FontAwesome5 name="plus-circle" size={18} color="#fff" style={styles.buttonIcon} />
         <Text style={styles.addButtonText}>Thêm Mới</Text>
       </TouchableOpacity>
     </View>
@@ -233,28 +238,29 @@ const AddExpenseScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f7f4f0',
-    padding: 16,
+    backgroundColor: '#F3F4F6',
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#8FCB8F',
-    marginBottom: 24,
+    marginBottom: 35,
     textAlign: 'center',
   },
   iconAboveTitle: {
     alignSelf: 'center',
   },
   iconContainer: {
-    width: 80,
-    height: 80,
+    width: 70,
+    height: 70,
     borderRadius: 40,
     backgroundColor: '#8FCB8F',
-    justifyContent: 'center',
+    justifyContent: 'center', 
     alignItems: 'center',
     alignSelf: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   inputContainer: {
     height: 50,
@@ -262,10 +268,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 15,
+    borderRadius: 10,
     paddingVertical: 12,
     paddingHorizontal: 16,
-    marginBottom: 16,
+    marginBottom: 15,
   },
   editableInputContainer: {
     borderColor: '#8FCB8F', // Change the border color when editable
@@ -283,7 +289,7 @@ const styles = StyleSheet.create({
   customDropdownOptions: {
     width: 325,
     borderWidth: 1,
-    borderRadius: 15,
+    borderRadius: 10,
     backgroundColor: '#fff',
     paddingHorizontal: 16,
     paddingVertical: 8,
@@ -300,20 +306,22 @@ const styles = StyleSheet.create({
   },
   arrowIcon: {
     position: 'absolute',
-    bottom: 2,
-    right: 5,
-    marginLeft: 10,
+    bottom: 0,
+    right: 0,
   },
   clearIcon: {
+    marginLeft: 10,
   },
   editIcon: {
   },
   addButton: {
     backgroundColor: '#8FCB8F',
-    borderRadius: 15,
+    borderRadius: 10,
     paddingVertical: 16,
     justifyContent: 'center',
     flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 20,
   },
   addButtonText: {
     fontSize: 18,
@@ -326,10 +334,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 15,
+    borderRadius: 10,
     paddingVertical: 12,
     paddingHorizontal: 16,
-    marginBottom: 16,
+    marginBottom: 15,
   },
   amountInputContainer: {
     flex: 1,
@@ -342,8 +350,9 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   currencyText: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#333',
+    
   },
 });
 

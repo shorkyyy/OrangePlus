@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import ErrorModal from './ErrorModal'; // Import the ErrorModal component
+import * as Haptics from 'expo-haptics';
 
 const EditExpenseScreen = ({ route, navigation }) => {
   const { expense, handleUpdateExpense, icon } = route.params;
@@ -50,6 +51,7 @@ const EditExpenseScreen = ({ route, navigation }) => {
 
     // Navigate back to the MainScreen after saving
     navigation.navigate('MainScreen', { updatedExpense: editedExpense });
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   };
 
   return (
@@ -57,7 +59,7 @@ const EditExpenseScreen = ({ route, navigation }) => {
     <View style={styles.container}>
       <View style={styles.iconContainer}>
         {/* Icon for expense */}
-        <FontAwesome5 name={icon} size={40} color="#fff" />
+        <FontAwesome5 name={icon} size={30} color="#fff" />
       </View>
       <TextInput
         style={styles.titleInput}
@@ -68,7 +70,7 @@ const EditExpenseScreen = ({ route, navigation }) => {
       <Text style={styles.expenseDescription}>{expense.description}</Text>
       <View style={styles.detailsContainer}>
         <View style={styles.detailsRow}>
-          <FontAwesome5 name="money-bill-wave" size={20} color="#8FCB8F" />
+        <FontAwesome5 name="money-bill-wave" size={20} color="#8FCB8F" style={styles.detailsIcon} />
           <Text style={styles.detailsLabel}>Số Tiền:</Text>
           <View style={styles.currencyContainer}>
             <TextInput
@@ -82,7 +84,7 @@ const EditExpenseScreen = ({ route, navigation }) => {
           <Text style={styles.currencySymbol}>đ</Text>
         </View>
         <View style={styles.detailsRow}>
-          <FontAwesome5 name="calendar" size={20} color="#8FCB8F" />
+        <FontAwesome5 name="calendar" size={20} color="#8FCB8F" style={styles.detailsIcon} />
           <Text style={[styles.detailsLabel, styles.detailsLabelText]}>Ngày:</Text>
           <TextInput
             style={[styles.detailsValue, styles.detailsValueText]}
@@ -107,45 +109,48 @@ const EditExpenseScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f7f4f0',
-    padding: 16,
+    backgroundColor: '#F3F4F6',
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
   iconContainer: {
-    width: 80,
-    height: 80,
+    width: 70,
+    height: 70,
     borderRadius: 40,
     backgroundColor: '#8FCB8F',
-    justifyContent: 'center',
+    justifyContent: 'center', 
     alignItems: 'center',
     alignSelf: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   titleInput: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#8FCB8F',
-    marginBottom: 8,
     textAlign: 'center',
   },
   expenseDescription: {
     fontSize: 18,
     marginBottom: 16,
-    color: '#777',
+    color: '#999',
     textAlign: 'center',
+    marginBottom: 34,
   },
   detailsContainer: {
     backgroundColor: '#fff',
-    borderRadius: 15,
+    borderRadius: 20,
     padding: 16,
   },
   detailsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
-    marginTop: 8,
+    marginBottom: 5,
+    marginTop: 5,
+  },
+  detailsIcon: {
+    marginRight: 10,
   },
   detailsLabel: {
-    marginLeft: 8,
     fontSize: 18,
     color: '#555',
   },
@@ -156,7 +161,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'right',
     flex: 1,
-    marginTop: 4, // Add marginTop to push the input field down slightly
+    marginTop: 10, // Add marginTop to push the input field down slightly
   },
   detailsValueText: {
     lineHeight: 18, // Set the line height to match the font size
@@ -170,14 +175,15 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#333',
     marginLeft: 5,
-    marginTop: 4,
+    bottom: -5,
   },
   saveButton: {
     backgroundColor: '#8FCB8F',
-    borderRadius: 15,
+    borderRadius: 20,
     paddingVertical: 16,
+    alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 20,
+    marginTop: 34,
     flexDirection: 'row', // Add flexDirection to render icon and text in a row
   },
   buttonText: {

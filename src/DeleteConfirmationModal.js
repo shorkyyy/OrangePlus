@@ -15,7 +15,7 @@ const DeleteConfirmationModal = ({ isVisible, expense, onCancel, onDelete }) => 
           <Icon name="trash" size={40} color="#FF6A63" style={styles.trashIcon} />
           <Text style={styles.modalTitle}>Xác nhận xóa</Text>
           <Text style={styles.modalMessage}>
-            Bạn có chắc chắn muốn xóa khoản chi tiêu này?
+            Bạn có chắc xóa khoản chi tiêu này?
           </Text>
           <View style={styles.modalButtonsContainer}>
             <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: '#fff',
     padding: 20,
-    borderRadius: 15,
+    borderRadius: 20,
     width: '80%',
     alignItems: 'center',
   },
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ccc',
     paddingVertical: 8,
     paddingHorizontal: 20,
-    borderRadius: 15,
+    borderRadius: 20,
     marginRight: 10,
   },
   cancelButtonText: {
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF6A63',
     paddingVertical: 8,
     paddingHorizontal: 20,
-    borderRadius: 15,
+    borderRadius: 20,
   },
   deleteButtonText: {
     color: '#fff',

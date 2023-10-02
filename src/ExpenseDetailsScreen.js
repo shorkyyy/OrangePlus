@@ -2,14 +2,15 @@ import React, { useState }  from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons'; // Change 'FontAwesome5' to the desired icon set
 import DeleteConfirmationModal from './DeleteConfirmationModal';
+import * as Haptics from 'expo-haptics';
 
 const ExpenseDetailsScreen = ({ route, navigation }) => {
   const { expense, handleUpdateExpense} = route.params; // get handleUpdateExpense from params
   const [showDeleteModal, setShowDeleteModal] = useState(false); 
   
   const iconMap = {
-    'Mua Sắm': 'shopping-basket',
-    'Mua Hàng Online': 'globe',
+    'Mua Sắm': 'shopping-bag',
+    'Mua Hàng Online': 'shopping-cart',
     'Ăn Uống': 'utensils',
     'Thú Cưng': 'paw',
     'Khác' : 'ellipsis-h',
@@ -31,6 +32,7 @@ const ExpenseDetailsScreen = ({ route, navigation }) => {
 
   // Function to handle the edit button press
   const handleEditExpense = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     navigation.navigate('EditExpenseScreen', {
       expense,
       handleUpdateExpense, // Pass the handleUpdateExpense function to EditExpenseScreen
@@ -41,6 +43,7 @@ const ExpenseDetailsScreen = ({ route, navigation }) => {
   // Function to handle the delete button press
   const handleDeleteButton = () => {
      setShowDeleteModal(true);
+     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   };
 
   const handleDelete = () => {
@@ -50,21 +53,20 @@ const ExpenseDetailsScreen = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.iconContainer}>
-        {/* Icon for expense */}
-        <FontAwesome5 name={descriptionIcon} size={40} color="#fff" />
+        <FontAwesome5 name={descriptionIcon} size={30} color="#fff" />
       </View>
-      <Text style={styles.expenseTitle}>{expense.title}</Text>
+      <Text style={styles.expenseTitle}>{expense.title.charAt(0).toUpperCase() + expense.title.slice(1)}</Text>
       <Text style={styles.expenseDescription}>{expense.description}</Text>
       <View style={styles.detailsContainer}>
         <View style={styles.detailsRow}>
-          <FontAwesome5 name="money-bill-wave" size={20} color="#77b777" />
+          <FontAwesome5 name="money-bill-wave" size={20} color="#8FCB8F" style={styles.detailsIcon} />
           <Text style={styles.detailsLabel}>Số Tiền:</Text>
           <Text style={styles.detailsValue}>{formatAmount(expense.amount)}</Text>
         </View>
         <View style={styles.detailsRow}>
-          <FontAwesome5 name="calendar" size={20} color="#77b777" />
-          <Text style={[styles.detailsLabel, styles.detailsLabelText]}>Ngày:</Text>
-          <Text style={[styles.detailsValue, styles.detailsValueText]}>{formatDate(expense.date)}</Text>
+          <FontAwesome5 name="calendar" size={20} color="#8FCB8F" style={styles.detailsIcon} />
+          <Text style={[styles.detailsLabel]}>Ngày:</Text>
+          <Text style={[styles.detailsValue]}>{formatDate(expense.date)}</Text>
         </View>
       </View>
       <View style={styles.buttonContainer}>
@@ -91,45 +93,48 @@ const ExpenseDetailsScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f7f4f0',
-    padding: 16,
+    backgroundColor: '#F3F4F6',
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
   iconContainer: {
-    width: 80,
-    height: 80,
+    width: 70,
+    height: 70,
     borderRadius: 40,
-    backgroundColor: '#77b777',
-    justifyContent: 'center',
+    backgroundColor: '#8FCB8F',
+    justifyContent: 'center', 
     alignItems: 'center',
     alignSelf: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   expenseTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#77b777',
-    marginBottom: 8,
+    color: '#8FCB8F',
     textAlign: 'center',
   },
   expenseDescription: {
     fontSize: 18,
     marginBottom: 16,
-    color: '#777',
+    color: '#999',
     textAlign: 'center',
+    marginBottom: 34,
   },
   detailsContainer: {
     backgroundColor: '#fff',
-    borderRadius: 15,
+    borderRadius: 20,
     padding: 16,
   },
   detailsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 7,
-    marginTop: 7,
+    marginBottom: 5,
+    marginTop: 5,
+  },
+  detailsIcon: {
+    marginRight: 10,
   },
   detailsLabel: {
-    marginLeft: 8,
     fontSize: 18,
     color: '#555',
   },
@@ -147,23 +152,25 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 20,
+    marginTop: 34,
   },
   editButton: {
-    backgroundColor: '#77b777',
+    flex: 1,
+    backgroundColor: '#8FCB8F',
     paddingHorizontal: 57,
     paddingVertical: 16,
-    borderRadius: 15,
+    borderRadius: 20,
     flexDirection: 'row',
     alignItems: 'center',
     marginRight: 10,
 
   },
   deleteButton: {
+    flex: 1,
     backgroundColor: '#FF6A63',
     paddingHorizontal: 57,
     paddingVertical: 16,
-    borderRadius: 15,
+    borderRadius: 20,
     flexDirection: 'row',
     alignItems: 'center',
 

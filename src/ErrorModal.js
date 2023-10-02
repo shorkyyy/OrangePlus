@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: '#fff',
     padding: 20,
-    borderRadius: 15,
+    borderRadius: 20,
     width: '80%',
     alignItems: 'center',
   },
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF6A63',
     paddingVertical: 8,
     paddingHorizontal: 20,
-    borderRadius: 15,
+    borderRadius: 20,
   },
   okButtonText: {
     color: '#fff',

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Animated, TextInput, Platform, LayoutAnimation,UIManager } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Animated,UIManager } from 'react-native';
 import { FAB } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome5'; // Change 'FontAwesome5' to the desired icon set
@@ -7,6 +7,7 @@ import DeleteConfirmationModal from './DeleteConfirmationModal';
 import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Haptics from 'expo-haptics';
+import { FlashList } from "@shopify/flash-list";
 
 const dummyExpensesData = [
 ];
@@ -32,10 +33,12 @@ const MainScreen = ({ route, navigation }) => {
   const [filteredExpenses, setFilteredExpenses] = useState([]);
   
   const [expandedDates, setExpandedDates] = useState([]);
+  const [sortedExpenses, setSortedExpenses] = useState([...dummyExpensesData]); // State variable to hold sorted expenses
+
 
   const iconMap = {
-    'Mua Sắm': 'shopping-basket',
-    'Mua Hàng Online': 'globe',
+    'Mua Sắm': 'shopping-bag',
+    'Mua Hàng Online': 'shopping-cart',
     'Ăn Uống': 'utensils',
     'Thú Cưng': 'paw',
     'Khác' : 'ellipsis-h',
@@ -45,7 +48,7 @@ const MainScreen = ({ route, navigation }) => {
   const colorMap = {
     'Mua Sắm': '#ffa07a',     // Light Salmon
     'Mua Hàng Online': '#ffcc5c', // Pastel Yellow
-    'Ăn Uống': '#87cefa',      // Light Sky Blue
+    'Ăn Uống': '#B0E0E6',      // Light Sky Blue
     'Thú Cưng': '#98fb98',     // Pale Green
     'Khác' : '#e0e0e0',
     // Add more descriptions and pastel colors as needed...
@@ -108,14 +111,12 @@ const MainScreen = ({ route, navigation }) => {
     return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
   }
   const filterAndSortExpenses = () => {
-    const filteredExpenses = expensesData.filter((expense) => expense.date.substring(0, 7) === currentMonth);
-  
-    // Sort filteredExpenses by date (descending order)
-    filteredExpenses.sort((a, b) => (a.date < b.date ? 1 : -1));
-  
-    setFilteredExpenses(filteredExpenses);
-  };  
-
+    const filteredAndSortedExpenses = expensesData
+      .filter((expense) => expense.date.substring(0, 7) === currentMonth)
+      .sort((a, b) => (a.date < b.date ? 1 : -1));
+    
+    setFilteredExpenses(filteredAndSortedExpenses);
+  };
   function calculateTotalAmountByDay(day) {
     let totalAmountByDay = 0;
     for (const expense of expensesData) {
@@ -138,6 +139,7 @@ const MainScreen = ({ route, navigation }) => {
         {isFirstExpenseOnSameDate && (
           <TouchableOpacity
             onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
               setExpandedDates((prevExpandedDates) =>
                 prevExpandedDates.includes(item.date)
                   ? prevExpandedDates.filter((date) => date !== item.date)
@@ -146,15 +148,15 @@ const MainScreen = ({ route, navigation }) => {
             }}
           >
             <View style={styles.dateHeader}>
-              <Text style={styles.expenseDateTitle}>{formatDate(item.date)}</Text>
               <Icon
-                name={expandedDates.includes(item.date) ? 'chevron-up' : 'chevron-down'}
-                size={18}
-                color="#000"
-                style={styles.arrowIcon}
-              />
+                  name={expandedDates.includes(item.date) ? 'chevron-up' : 'chevron-down'}
+                  size={18}
+                  color="#000"
+                  style={styles.arrowIcon}
+                />
+              <Text style={styles.expenseDateTitle}>{formatDate(item.date)}:</Text>
                <Text style={styles.todayTotalAmount}>
-                {formatAmount(calculateTotalAmountByDay(item.date))}
+                -{formatAmount(calculateTotalAmountByDay(item.date))}
                 </Text>
             </View>
             {!expandedDates.includes(item.date) && <View style={styles.greyDot} />}
@@ -166,20 +168,20 @@ const MainScreen = ({ route, navigation }) => {
             style={[
               styles.expenseItem,
               {
-                borderTopLeftRadius: isFirstExpenseOnSameDate ? 15 : 0,
-                borderTopRightRadius: isFirstExpenseOnSameDate ? 15 : 0,
-                borderBottomLeftRadius: isLastExpenseOnSameDate ? 15 : 0,
-                borderBottomRightRadius: isLastExpenseOnSameDate ? 15 : 0,
+                borderTopLeftRadius: isFirstExpenseOnSameDate ? 20 : 0,
+                borderTopRightRadius: isFirstExpenseOnSameDate ? 20 : 0,
+                borderBottomLeftRadius: isLastExpenseOnSameDate ? 20 : 0,
+                borderBottomRightRadius: isLastExpenseOnSameDate ? 20 : 0,
               },
             ]}
             onPress={() => navigation.navigate('ExpenseDetailsScreen', { expense: item, handleUpdateExpense, handleDeleteExpense })}
           >
             <View style={styles.expenseInfoContainer}>
               <View style={styles.iconContainer}>
-                <Icon name={iconMap[item.description]} size={24} color="#fff" style={styles.expenseIcon} />
+                <Icon name={iconMap[item.description]} size={22} color="#fff" style={styles.expenseIcon} />
               </View>
               <View style={styles.expenseDetailsContainer}>
-                <Text style={styles.expenseTitle}>{item.title}</Text>
+              <Text style={styles.expenseTitle}>{item.title.charAt(0).toUpperCase() + item.title.slice(1)}</Text>
                 <Text style={styles.expenseDescription}>{item.description}</Text>
               </View>
               <View>
@@ -192,7 +194,7 @@ const MainScreen = ({ route, navigation }) => {
         <View style={styles.emptyEasterEggContainer}>
           <Icon name="paw" size={20} color="#ccc" />
           <Text style={styles.emptyTextEasterEgg}>Made by Orange with love</Text>
-          <Text style={styles.emptyTextEasterEggVersion}>version 1.1.0</Text>
+          <Text style={styles.emptyTextEasterEggVersion}>version 1.2.0</Text>
         </View>
       )}
       </>
@@ -206,13 +208,13 @@ const MainScreen = ({ route, navigation }) => {
     const [currentYear, currentMonth, currentDay] = currentDate.split('-');
 
     if (date === currentDate) {
-      return 'Hôm Nay';
+      return 'Hôm nay';
     } else if (
       parseInt(year, 10) === parseInt(currentYear, 10) &&
       parseInt(month, 10) === parseInt(currentMonth, 10) &&
       parseInt(day, 10) === parseInt(currentDay, 10) - 1
     ) {
-      return 'Hôm Qua';
+      return 'Hôm qua';
     } else {
       const formattedDate = `${day}/${month}/${year}`;
       return formattedDate;
@@ -281,8 +283,11 @@ const MainScreen = ({ route, navigation }) => {
         const expensesDataString = await AsyncStorage.getItem('expensesData');
         if (expensesDataString) {
           const loadedExpensesData = JSON.parse(expensesDataString);
+          // Sort the loaded expenses data by date (descending order)
+          loadedExpensesData.sort((a, b) => (a.date < b.date ? 1 : -1));
           setExpensesData(loadedExpensesData);
-  
+          setSortedExpenses(loadedExpensesData); // Set sortedExpenses initially
+
           // Initialize the expandedDates state with all unique dates from the loaded expenses data
           const allExpenseDates = loadedExpensesData.map((expense) => expense.date);
           setExpandedDates((prevExpandedDates) => {
@@ -291,25 +296,23 @@ const MainScreen = ({ route, navigation }) => {
             return uniqueDates;
           });
         }
-        
+
         // Check if the modal flag is set
         const modalShown = await AsyncStorage.getItem('modalShown');
 
         // If the modal has not been shown before, set the flag to true and show the modal
         if (!modalShown) {
-        await AsyncStorage.setItem('modalShown', 'true');
-        setShowModal(true);
+          await AsyncStorage.setItem('modalShown', 'true');
+          setShowModal(true);
         }
-    } catch (error) {
+      } catch (error) {
         console.error('Error loading expenses data:', error);
-    }
+      }
     };
-  
+
     loadExpensesData();
   }, []);
   
-
-
   useEffect(() => {
     if (expenseId) {
       handleDeleteExpense(expenseId);
@@ -325,10 +328,10 @@ const MainScreen = ({ route, navigation }) => {
     }
   }, [expensesData, notificationShown]);
 
-useEffect(() => {
-  filterAndSortExpenses();
-}, [expensesData, expandedDates, currentMonth]);
-
+  useEffect(() => {
+    filterAndSortExpenses();
+  }, [expensesData, expandedDates, currentMonth]);
+  
   // Function to format the current month as "mm/yyyy"
   function formatMonth(date) {
     const [year, month] = date.split('-');
@@ -386,7 +389,6 @@ useEffect(() => {
     });
   };
   // Function to send a notification when the total amount exceeds 4,000,000 VND
-// Function to schedule a push notification if total expenses for the current month exceed the threshold
 async function schedulePushNotification() {
   const customIconUri = '/Users/huyphan/spendingManage/assets/adaptive-icon.png';
   // Define the threshold for triggering the notification
@@ -424,18 +426,20 @@ async function schedulePushNotification() {
    }
   }
 
-  // Function to handle deleting an expense
   const handleDeleteExpense = async (expenseId) => {
     try {
       // Remove the expense with the given ID from the expensesData array
       const updatedExpenses = expensesData.filter((expense) => expense.id !== expenseId);
-  
+
+      // Update the sorted expenses array (no need to sort it again)
+      setSortedExpenses(updatedExpenses);
+
       // Save the updated expenses to local storage
       await AsyncStorage.setItem('expensesData', JSON.stringify(updatedExpenses));
-  
+
       // Update the expensesData state
       setExpensesData(updatedExpenses);
-  
+
       // Close the delete confirmation modal
       setShowDeleteModal(false);
     } catch (error) {
@@ -445,6 +449,7 @@ async function schedulePushNotification() {
 
   // Function to display the delete confirmation modal
   const handleDeleteConfirmation = (expenseId) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     // Find the expense to delete based on the ID
     const expenseToDelete = expensesData.find((expense) => expense.id === expenseId);
 
@@ -459,16 +464,6 @@ async function schedulePushNotification() {
   const handleCancelDelete = () => {
     setShowDeleteModal(false);
   };
-
-    // Function to handle tapping on the left side of the summary box
-    const handleTapLeft = () => {
-      handlePreviousMonth();
-    };
-  
-    // Function to handle tapping on the right side of the summary box
-    const handleTapRight = () => {
-      handleNextMonth();
-    };
 
     const { totalAmountByDescription, totalAmountSpent, sortedDescriptions } = calculateTotalAmountByDescription(
       currentMonth
@@ -495,7 +490,7 @@ async function schedulePushNotification() {
     return (
       <View style={styles.container}>
          <View style={styles.summaryBox}>
-          <View style={styles.navigationContainer}>
+         <View style={styles.navigationContainer}>
             <TouchableOpacity onPress={handlePreviousMonth}>
             <Icon name="chevron-left" style={styles.navigationArrow} />
             </TouchableOpacity>
@@ -519,7 +514,7 @@ async function schedulePushNotification() {
                       left: `${segmentPositions[description]}%`,
                       width: `${segmentWidths[description]}%`,
                       backgroundColor: colorMap[description] || '#ccc',
-                      height: 10,
+                      height: '100%',
                       position: 'absolute',
                     }}
                   />
@@ -541,18 +536,18 @@ async function schedulePushNotification() {
           ))}
         </View>
         {hasExpensesData() ? (
-            <FlatList
-                style={styles.FlatList}
-                data={filteredExpenses.sort((a, b) => (a.date < b.date ? 1 : -1))}
+            <FlashList
+               data={filteredExpenses}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
                 showsVerticalScrollIndicator={false}
+                estimatedItemSize={868}
             />
 
         ) : (
           <View style={styles.emptyContainer}>
             <Icon name="piggy-bank" size={60} color="#ccc" />
-            <Text style={styles.emptyText}>Dữ liệu rỗng</Text>
+            <Text style={styles.emptyText}>Chi tiêu trống</Text>
           </View>
         )}
         {/* Render the delete confirmation modal */}
@@ -598,30 +593,33 @@ async function schedulePushNotification() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f7f4f0',
-    padding: 16,
+    backgroundColor: '#F3F4F6',
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
   navigationContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingHorizontal: 16,
   },
   navigationArrow: {
     padding: 5,
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#fff', // Change the color to whiteđ
+    color: '#FFF', // Change the color to whiteđ
     marginVertical: 5,
   },
   navigationMonth: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff', // Change the color to white
+    color: '#FFF', // Change the color to white
   },
   summaryBox: {
     backgroundColor: '#8FCB8F',
     padding: 15,
-    borderRadius: 30,
+    borderRadius: 20,
+    marginBottom: 20,
   },
   
   summaryItem: {
@@ -632,28 +630,22 @@ const styles = StyleSheet.create({
 
   progressBar: {
     width: '90%', // Make the progress bar occupy the full width
-    height: 8,
-    backgroundColor: '#999',
+    height: 10,
+    backgroundColor: 'rgba(242, 242, 242, 0.8)', // 50% opacity
     borderRadius: 5,
     overflow: 'hidden',
     marginBottom: 10,
   },
-    progressFill: {
-      height: '100%',
-      backgroundColor: '#fff', // Background color for the filled progress bar (You can keep this color)
-    },
-
   totalAmount: {
     fontSize: 40,
     fontWeight: 'bold',
     color: '#fff',
     alignItems: 'center',
-  },
-  FlatList: {
     marginTop: 10,
+    marginBottom: 15,
   },
   expenseItem: {
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff', 
     padding: 16,
     marginBottom: 5,
   },
@@ -681,7 +673,7 @@ const styles = StyleSheet.create({
   },
   expenseTitle: {
     fontSize: 18,
-    color: '#444x',
+    color: '#555',
     fontWeight: 'bold',
   },
   expenseDescription: {
@@ -700,7 +692,7 @@ const styles = StyleSheet.create({
     color: '#FF6B6B',
   },
   dateHeader: {
-    marginStart: 18,
+    // marginStart: 18,
     marginTop: 18,
     marginBottom: 5,
     flexDirection: 'row',
@@ -712,7 +704,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#999',
     alignSelf: 'center',
-    marginLeft: 10,
+    marginRight: 10,
   },
 
   expenseDateTitle: {
@@ -724,13 +716,12 @@ const styles = StyleSheet.create({
   },
   fabContainer: {
     position: 'absolute',
-    right: 0,
-    bottom: 10,
-    margin: 16,
+    right: 20,
+    bottom: 15,
     shadowColor: '#8FCB8F',
   },
   fab: {
-    borderRadius: 20,
+    borderRadius: 30,
     // shadowColor: "#8FCB8F",
     backgroundColor: '#88CC88',
   },
@@ -746,10 +737,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyText: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#ccc',
-    marginTop: 15,
+    marginTop: 20,
   },
   emptyTextEasterEgg: {
     fontSize: 12,
@@ -791,7 +782,7 @@ const styles = StyleSheet.create({
   greyDot: {
     width: '100%',
     height: 8,
-    borderRadius: 5,
+    borderRadius: 10,
     backgroundColor: '#fff',
     alignSelf: 'center',
     marginBottom: 5,
@@ -801,17 +792,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#999',
     marginLeft: 'auto', // Align to the right
-    marginEnd: 18,
+    // marginEnd: 18,
   },  
   searchBarContainer: {
     
-  },
-  searchBar: {
-    flex: 1,
-    marginTop: 15,
-    borderRadius: 15,
-    paddingHorizontal: 16,
-    backgroundColor: '#ccc',
   },
   toggleSearchButton: {
     marginTop: 5,

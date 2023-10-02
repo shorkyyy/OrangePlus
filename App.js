@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, StatusBar, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import MainScreen from './src/MainScreen';
@@ -18,18 +19,14 @@ const screenTitles = {
   EditExpenseScreen: 'Chỉnh Sửa',
 };
 
-StatusBar.setBackgroundColor('#f7f4f0');
-
 export default function App() {
   const [fontsLoaded] = useFonts({
     'Roboto-Regular': require('./assets/fonts/Roboto-Regular.ttf'),
     'Roboto-Bold': require('./assets/fonts/Roboto-Bold.ttf'),
   });
 
-  const notificationListener = useRef();
-  const responseListener = useRef();
-
   useEffect(() => {
+    registerForPushNotificationsAsync();
     // Set up the notification handler
     Notifications.setNotificationHandler({
       handleNotification: async () => ({
@@ -40,17 +37,20 @@ export default function App() {
     });
   }, []);
 
-  const loadCustomFonts = async () => {
-    try {
-      await Font.loadAsync({
-        'Roboto-Regular': require('./assets/fonts/Roboto-Regular.ttf'),
-        'Roboto-Bold': require('./assets/fonts/Roboto-Bold.ttf'),
-      });
-      setFontsLoaded(true);
-    } catch (error) {
-      console.error('Error loading custom fonts:', error);
-      // Handle font loading error if needed
+  const registerForPushNotificationsAsync = async () => {
+    let token;
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
     }
+    if (finalStatus !== 'granted') {
+      alert('Failed to get push token for push notification!');
+      return;
+    }
+    token = (await Notifications.getExpoPushTokenAsync()).data;
+    return token;
   };
 
   if (!fontsLoaded) {
@@ -58,13 +58,13 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#f7f4f0' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#F3F4F6' }}>
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="MainScreen"
           screenOptions={{
             headerStyle: {
-              backgroundColor: '#f7f4f0', // Set the background color of the header
+              backgroundColor: '#F3F4F6', // Set the background color of the header
             },
             headerTitleStyle: {
               fontFamily: 'Roboto-Bold', // Set the font family for the header title
@@ -78,11 +78,12 @@ export default function App() {
             headerTintColor: '#000', // Set the color of the back button icon and title
           }}
         >
-          <Stack.Screen name="MainScreen" component={MainScreen} options={{ title: 'Tổng chi tiêu' }} />
-          <Stack.Screen name="AddExpenseScreen" component={AddExpenseScreen} options={{ title: 'Thêm mới' }} />
-          <Stack.Screen name="ExpenseDetailsScreen" component={ExpenseDetailsScreen} options={{ title: 'Thông tin' }} />
-          <Stack.Screen name="EditExpenseScreen" component={EditExpenseScreen} options={{ title: 'Chỉnh sửa' }} />
+          <Stack.Screen name="MainScreen" component={MainScreen} options={{ title: 'Tổng Quan' }} />
+          <Stack.Screen name="AddExpenseScreen" component={AddExpenseScreen} options={{ title: 'Thêm Mới' }} />
+          <Stack.Screen name="ExpenseDetailsScreen" component={ExpenseDetailsScreen} options={{ title: 'Thông Tin' }} />
+          <Stack.Screen name="EditExpenseScreen" component={EditExpenseScreen} options={{ title: 'Chỉnh Sửa' }} />
         </Stack.Navigator>
+        <StatusBar style="Dark" androidNavigationBarStyle="light-content" />
       </NavigationContainer>
     </SafeAreaView>
   );
@@ -93,6 +94,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center', // Center vertically
     alignItems: 'center', // Center horizontally
-    backgroundColor: '#f7f4f0',
+    backgroundColor: '#F3F4F6',
   },
 });
