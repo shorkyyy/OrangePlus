@@ -1,0 +1,194 @@
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { FontAwesome5 } from '@expo/vector-icons';
+import ErrorModal from './ErrorModal'; // Import the ErrorModal component
+
+const EditExpenseScreen = ({ route, navigation }) => {
+  const { expense, handleUpdateExpense, icon } = route.params;
+
+  // Create states to track the edited values
+  const [title, setTitle] = useState(expense.title);
+  const [description, setDescription] = useState(expense.description);
+  const [amount, setAmount] = useState(formatAmount(expense.amount)); // Format the initial amount
+  const [date, setEditDate] = useState(expense.date);
+
+  // Add the missing state for the error modal visibility
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+
+  // Function to format the amount with "." as a thousand separator and add "đ" for VND
+  function formatAmount(amount) {
+    return amount.toLocaleString('vi-VN');
+  }
+
+  // Function to enable the date input for editing
+  const [isDateEditable, setIsDateEditable] = useState(false);
+  const handleEditDate = () => {
+    setIsDateEditable(true);
+  };
+
+  // Function to update the amount input as "50.000" when typing "50000"
+  const formatAmountInput = (text) => {
+    const formattedText = text.replace(/\D/g, ''); // Remove all non-numeric characters
+    setAmount(formattedText.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')); // Add thousands separators
+  };
+
+  // Function to handle the save button press
+  const handleSave = () => {
+    // Format the edited amount (without the currency symbol or thousand separators)
+    const amountWithoutFormat = amount.replace(/\D/g, '');
+    // Update the expense object with the edited data
+    const editedExpense = {
+      ...expense,
+      title,
+      description,
+      amount: parseFloat(amountWithoutFormat.replace(/\./g, '')), // Remove thousands separators before saving
+      date,
+    };
+
+    // Call the handleUpdateExpense function to update the expensesData
+    handleUpdateExpense(editedExpense);
+
+    // Navigate back to the MainScreen after saving
+    navigation.navigate('MainScreen', { updatedExpense: editedExpense });
+  };
+
+  return (
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+    <View style={styles.container}>
+      <View style={styles.iconContainer}>
+        {/* Icon for expense */}
+        <FontAwesome5 name={icon} size={40} color="#fff" />
+      </View>
+      <TextInput
+        style={styles.titleInput}
+        value={title}
+        onChangeText={setTitle}
+        placeholder="Tiêu đề"
+      />
+      <Text style={styles.expenseDescription}>{expense.description}</Text>
+      <View style={styles.detailsContainer}>
+        <View style={styles.detailsRow}>
+          <FontAwesome5 name="money-bill-wave" size={20} color="#8FCB8F" />
+          <Text style={styles.detailsLabel}>Số Tiền:</Text>
+          <View style={styles.currencyContainer}>
+            <TextInput
+              style={styles.detailsValue}
+              value={amount}
+              onChangeText={formatAmountInput} // Use the custom function to update amount changes
+              placeholder="Số Tiền Đã Chi"
+              keyboardType="numeric"
+            />
+          </View>
+          <Text style={styles.currencySymbol}>đ</Text>
+        </View>
+        <View style={styles.detailsRow}>
+          <FontAwesome5 name="calendar" size={20} color="#8FCB8F" />
+          <Text style={[styles.detailsLabel, styles.detailsLabelText]}>Ngày:</Text>
+          <TextInput
+            style={[styles.detailsValue, styles.detailsValueText]}
+            value={date}
+            onChangeText={setEditDate}
+            placeholder="Vào Ngày (YYYY-MM-DD)"
+          />
+        </View>
+      </View>
+      <ErrorModal isVisible={errorModalVisible} onCancel={() => setErrorModalVisible(false)} />
+
+      {/* Render the Save button */}
+      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+        <FontAwesome5 name="save" size={20} color="#fff" style={styles.buttonIcon} />
+        <Text style={styles.buttonText}>Lưu</Text>
+      </TouchableOpacity>
+    </View>
+    </TouchableWithoutFeedback>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f7f4f0',
+    padding: 16,
+  },
+  iconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#8FCB8F',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    marginBottom: 16,
+  },
+  titleInput: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#8FCB8F',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  expenseDescription: {
+    fontSize: 18,
+    marginBottom: 16,
+    color: '#777',
+    textAlign: 'center',
+  },
+  detailsContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    padding: 16,
+  },
+  detailsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+    marginTop: 8,
+  },
+  detailsLabel: {
+    marginLeft: 8,
+    fontSize: 18,
+    color: '#555',
+  },
+  detailsLabelText: {
+    lineHeight: 18, // Set the line height to match the font size
+  },
+  detailsValue: {
+    fontSize: 18,
+    textAlign: 'right',
+    flex: 1,
+    marginTop: 4, // Add marginTop to push the input field down slightly
+  },
+  detailsValueText: {
+    lineHeight: 18, // Set the line height to match the font size
+  },
+  currencyContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 'auto', // This will push the currency container to the right
+  },
+  currencySymbol: {
+    fontSize: 18,
+    color: '#333',
+    marginLeft: 5,
+    marginTop: 4,
+  },
+  saveButton: {
+    backgroundColor: '#8FCB8F',
+    borderRadius: 15,
+    paddingVertical: 16,
+    justifyContent: 'center',
+    marginTop: 20,
+    flexDirection: 'row', // Add flexDirection to render icon and text in a row
+  },
+  buttonText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginLeft: 8, // Add marginLeft to create space between icon and text
+  },
+  buttonIcon: {
+    marginRight: 8, // Add marginRight to create space between icon and text
+  },
+});
+
+export default EditExpenseScreen;
