@@ -4,7 +4,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/shorkyyy/OrangePlus)](https://github.com/shorkyyy/OrangePlus/issues)
 [![GitHub stars](https://img.shields.io/github/stars/shorkyyy/OrangePlus)](https://github.com/shorkyyy/OrangePlus/stargazers)
 
-![Orange Plus/Orange⁺ Logo](https://example.com/your-app-logo.png)
+![Orange Plus/Orange⁺ Logo](https://drive.google.com/file/d/17iDa-WADJ5vMtnVKxm310Ts7ME0CufHW/view?usp=share_link)
 
 **Orange Plus/Orange⁺** is a spending tracking app built with React Native that helps you manage your spending effectively.
 
