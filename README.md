@@ -53,7 +53,7 @@ To use **Orange Plus/Orange⁺**, follow these steps:
 3. Start adding your expenses and categorizing them.
 4. Set up your budget and spending goals.
 
-##Configuration
+## Configuration
 We welcome contributions from the community! To contribute to Orange Plus/Orange⁺, follow these steps:
 
 1. Fork the repository.
