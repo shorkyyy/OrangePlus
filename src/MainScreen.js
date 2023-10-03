@@ -154,7 +154,7 @@ const MainScreen = ({ route, navigation }) => {
                   color="#000"
                   style={styles.arrowIcon}
                 />
-              <Text style={styles.expenseDateTitle}>{formatDate(item.date)}:</Text>
+              <Text style={styles.expenseDateTitle}>{formatDate(item.date)}</Text>
                <Text style={styles.todayTotalAmount}>
                 -{formatAmount(calculateTotalAmountByDay(item.date))}
                 </Text>
@@ -194,7 +194,7 @@ const MainScreen = ({ route, navigation }) => {
         <View style={styles.emptyEasterEggContainer}>
           <Icon name="paw" size={20} color="#ccc" />
           <Text style={styles.emptyTextEasterEgg}>Made by Orange with love</Text>
-          <Text style={styles.emptyTextEasterEggVersion}>version 1.2.0</Text>
+          <Text style={styles.emptyTextEasterEggVersion}>version 1.2.1</Text>
         </View>
       )}
       </>
@@ -617,7 +617,7 @@ const styles = StyleSheet.create({
   },
   summaryBox: {
     backgroundColor: '#8FCB8F',
-    padding: 15,
+    paddingVertical: 16,
     borderRadius: 20,
     marginBottom: 20,
   },
@@ -673,14 +673,12 @@ const styles = StyleSheet.create({
   },
   expenseTitle: {
     fontSize: 18,
-    color: '#555',
-    fontWeight: 'bold',
+    color: '#000',
   },
   expenseDescription: {
     fontSize: 14,
     color: '#999',
     marginTop: 2,
-    fontWeight: 'bold',
   },
   expenseDate: {
     fontSize: 14,
@@ -785,7 +783,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: '#fff',
     alignSelf: 'center',
-    marginBottom: 5,
+
   },
   todayTotalAmount: {
     fontSize: 16,

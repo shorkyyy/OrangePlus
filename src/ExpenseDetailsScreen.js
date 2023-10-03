@@ -115,10 +115,9 @@ const styles = StyleSheet.create({
   },
   expenseDescription: {
     fontSize: 18,
-    marginBottom: 16,
     color: '#999',
     textAlign: 'center',
-    marginBottom: 34,
+    marginBottom: 24,
   },
   detailsContainer: {
     backgroundColor: '#fff',
@@ -152,7 +151,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 34,
+    marginTop: 24,
   },
   editButton: {
     flex: 1,

@@ -24,11 +24,6 @@ const AddExpenseScreen = ({ navigation }) => {
     setIsDateEditable(true);
   };
   
-  // Function to handle date selection from the date picker
-  const handleDateChange = (selectedDate) => {
-    setDate(selectedDate);
-    setIsDateEditable(false); // Close the date picker after selecting a date
-  };
   // Define the list of available descriptions for the dropdown
   const availableDescriptions = [
     'Mua Sắm',     
@@ -89,6 +84,7 @@ const AddExpenseScreen = ({ navigation }) => {
     const month = String(currentDate.getMonth() + 1).padStart(2, '0');
     const day = String(currentDate.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+    // return ` ${day}/${month}/${year}`;
   }
 
   // Function to format the amount with "." as a thousand separator and add "đ" for VND
@@ -268,7 +264,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 10,
+    borderRadius: 15,
     paddingVertical: 12,
     paddingHorizontal: 16,
     marginBottom: 15,
@@ -289,7 +285,7 @@ const styles = StyleSheet.create({
   customDropdownOptions: {
     width: 325,
     borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: 15,
     backgroundColor: '#fff',
     paddingHorizontal: 16,
     paddingVertical: 8,
@@ -316,7 +312,7 @@ const styles = StyleSheet.create({
   },
   addButton: {
     backgroundColor: '#8FCB8F',
-    borderRadius: 10,
+    borderRadius: 20,
     paddingVertical: 16,
     justifyContent: 'center',
     flexDirection: 'row',
@@ -330,11 +326,12 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   amountContainer: {
+    height: 50,
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 10,
+    borderRadius: 15,
     paddingVertical: 12,
     paddingHorizontal: 16,
     marginBottom: 15,

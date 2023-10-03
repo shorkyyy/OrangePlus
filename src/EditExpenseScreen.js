@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     color: '#999',
     textAlign: 'center',
-    marginBottom: 34,
+    marginBottom: 24,
   },
   detailsContainer: {
     backgroundColor: '#fff',
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 34,
+    marginTop: 24,
     flexDirection: 'row', // Add flexDirection to render icon and text in a row
   },
   buttonText: {
