@@ -73,7 +73,7 @@ We welcome contributions from the community! To contribute to **Orange Plus/Oran
 2. Clone your fork:
 
    ```bash
-   git clone https://github.com/YourUsername/OrangePlus.git
+   git clone https://github.com/shorkyyy/OrangePlus.git
    ```
 
 3. Create a new branch:
